@@ -1,0 +1,90 @@
+/* Sparkle background: gradient + glows (also the no-WebGL fallback) with a WebGL canvas on top.
+   Palette: midnight #070a1f, indigo #1b1f6b, violet #5b3fd1, cool white #dbe8ff, cyan accent #73e0ff. */
+
+.sparkle-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 15% 0%, #141a5a 0%, rgba(20, 26, 90, 0) 60%),
+    radial-gradient(100% 80% at 100% 100%, #2a1573 0%, rgba(42, 21, 115, 0) 55%),
+    linear-gradient(165deg, #070a1f 0%, #0a0e2e 50%, #0d0a28 100%);
+  contain: strict; /* isolates layout/paint so the effect never causes layout shifts */
+}
+
+/* Layered, soft lighting. Transform-only animation keeps it on the compositor. */
+.sparkle-bg__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.sparkle-bg__glow--a {
+  width: 60vmax;
+  height: 60vmax;
+  left: -18vmax;
+  top: -22vmax;
+  background: radial-gradient(circle, rgba(91, 63, 209, 0.55) 0%, rgba(91, 63, 209, 0) 65%);
+  animation: sparkle-drift-a 38s ease-in-out infinite alternate;
+}
+.sparkle-bg__glow--b {
+  width: 55vmax;
+  height: 55vmax;
+  right: -20vmax;
+  bottom: -24vmax;
+  background: radial-gradient(circle, rgba(60, 120, 230, 0.4) 0%, rgba(115, 224, 255, 0.12) 40%, rgba(60, 120, 230, 0) 68%);
+  animation: sparkle-drift-b 46s ease-in-out infinite alternate;
+}
+@keyframes sparkle-drift-a { to { transform: translate3d(8vmax, 6vmax, 0) scale(1.08); } }
+@keyframes sparkle-drift-b { to { transform: translate3d(-7vmax, -5vmax, 0) scale(1.06); } }
+
+/* CSS-only star layer, shown only when WebGL is unavailable. */
+.sparkle-bg__stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, rgba(219, 232, 255, 0.9), transparent 100%),
+    radial-gradient(1px 1px at 28% 72%, rgba(219, 232, 255, 0.7), transparent 100%),
+    radial-gradient(1.6px 1.6px at 47% 33%, rgba(115, 224, 255, 0.8), transparent 100%),
+    radial-gradient(1px 1px at 63% 81%, rgba(190, 170, 255, 0.8), transparent 100%),
+    radial-gradient(1.4px 1.4px at 78% 24%, rgba(219, 232, 255, 0.85), transparent 100%),
+    radial-gradient(1px 1px at 90% 58%, rgba(190, 170, 255, 0.7), transparent 100%),
+    radial-gradient(1.2px 1.2px at 7% 54%, rgba(115, 224, 255, 0.7), transparent 100%),
+    radial-gradient(1px 1px at 38% 8%, rgba(219, 232, 255, 0.7), transparent 100%);
+  background-size: 520px 520px;
+}
+.sparkle-bg--fallback .sparkle-bg__stars {
+  opacity: 0.75;
+  animation: sparkle-twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes sparkle-twinkle { from { opacity: 0.45; } to { opacity: 0.85; } }
+
+/* Gentle edge darkening so content in the middle of the page stays easy to read. */
+.sparkle-bg__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(7, 10, 31, 0) 35%, rgba(5, 7, 20, 0.5) 100%);
+}
+
+.sparkle-bg__host {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+.sparkle-bg--webgl .sparkle-bg__host { opacity: 1; }
+.sparkle-bg__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle-bg__glow,
+  .sparkle-bg--fallback .sparkle-bg__stars { animation: none; }
+  .sparkle-bg__host { transition: none; }
+}

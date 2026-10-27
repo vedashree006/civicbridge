@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: civicbridge-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/civicbridge}
+    username: ${DB_USERNAME:civicbridge}
+    password: ${DB_PASSWORD:civicbridge}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true   # existing databases (created by Hibernate) are baselined at 0, then V1 runs
+    baseline-version: 0
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 1000ms
+      connect-timeout: 1000ms
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-dev-only-secret-change-me}
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+  storage:
+    path: ${FILE_STORAGE_PATH:./data/uploads}
+  analytics:
+    active-window-seconds: ${ANALYTICS_ACTIVE_WINDOW_SECONDS:300}
+    touch-interval-seconds: ${ANALYTICS_TOUCH_INTERVAL_SECONDS:30}
+    session-cache-seconds: ${ANALYTICS_SESSION_CACHE_SECONDS:60}
+    event-retention-days: ${ANALYTICS_EVENT_RETENTION_DAYS:90}
+    session-retention-days: ${ANALYTICS_SESSION_RETENTION_DAYS:30}
+    consent-retention-days: ${CONSENT_RETENTION_DAYS:1095}
+    zone: ${ANALYTICS_ZONE:Europe/Berlin}
+    hash-salt: ${ANALYTICS_HASH_SALT:}
+    allow-legacy-tokens: ${ANALYTICS_ALLOW_LEGACY_TOKENS:false}
+    collect-per-minute: ${ANALYTICS_COLLECT_PER_MINUTE:60}
+    consent-policy-version: ${CONSENT_POLICY_VERSION:2026-10-1}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.civicbridge: INFO

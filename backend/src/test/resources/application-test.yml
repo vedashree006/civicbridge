@@ -1,0 +1,29 @@
+# Test profile: in-memory H2, Flyway off, Redis intentionally unreachable to exercise the DB fallback path.
+spring:
+  datasource:
+    url: jdbc:h2:mem:civicbridge;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6399
+      timeout: 200ms
+      connect-timeout: 200ms
+app:
+  jwt:
+    secret: test-only-secret-test-only-secret-test-only-secret
+    expiration-ms: 3600000
+  storage:
+    path: ./target/test-uploads
+  analytics:
+    hash-salt: test-salt
+management:
+  health:
+    redis:
+      enabled: false
